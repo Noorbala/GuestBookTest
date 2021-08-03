@@ -1,48 +1,82 @@
 <?xml version="1.0"?>
-<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.3.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 7.3.0//EN"
+        "http://www.liferay.com/dtd/liferay-service-builder_7_3_0.dtd">
 
 <service-builder dependency-injector="ds" package-path="com.liferay.docs.guestbook" mvcc-enabled="true">
-	<author>your name</author>
-	<namespace>GB</namespace>
+    <author>your name</author>
+    <namespace>GB</namespace>
 
-	<entity name="Guestbook" local-service="true" uuid="true" remote-service="true">
+    <entity name="Guestbook" local-service="true" uuid="true" remote-service="true">
 
-		<!-- Guestbook fields -->
+        <!-- Guestbook fields -->
+        <column name="guestbookId" primary="true" type="long"/>
+        <column name="name" type="String"/>
 
-		<column name="guestbookId" primary="true" type="long" />
-		<column name="name" type="String" />
+        <!-- Group instance -->
+        <column name="groupId" type="long"/>
+        <column name="companyId" type="long"/>
 
+        <!-- Audit fields (These fields help you track owners of entity instances) -->
+        <column name="userId" type="long"/>
+        <column name="userName" type="String"/>
+        <column name="createDate" type="Date"/>
+        <column name="modifiedDate" type="Date"/>
 
-		<!-- Group instance -->
+        <!-- Status fields (provide fields in the database to track your entity’s status as it passes through the workflow) -->
+        <column name="status" type="int"/>
+        <column name="statusByUserId" type="long"/>
+        <column name="statusByUserName" type="String"/>
+        <column name="statusDate" type="Date"/>
 
-		<column name="groupId" type="long" />
-		<column name="companyId" type="long" />
+        <!-- Finder methods -->
+        <!-- generates a get method for retrieving Guestbook entities -->
+        <!-- This finder gets all Guestbooks by their groupId -->
+        <!-- This is how administrators put Guestbooks on multiple Sites -->
+        <!-- and each Guestbook has its own data scoped to its Site -->
+        <finder name="GroupId" return-type="Collection">
+            <finder-column name="groupId"/>
+        </finder>
+    </entity>
 
-		<!-- Audit fields (These fields help you track owners of entity instances) -->
-		<column name="userId" type="long" />
-		<column name="userName" type="String" />
-		<column name="createDate" type="Date" />
-		<column name="modifiedDate" type="Date" />
+    <entity name="GuestbookEntry" local-service="true" remote-service="true" uuid="true">
+        <!-- Guestbook Entry fields -->
+        <column name="entryId" primary="true" type="long"/>
+        <column name="name" type="String"/>
+        <column name="email" type="String"/>
+        <column name="message" type="String"/>
+        <column name="guestbookId" type="long"/>
 
-		<!-- Status fields (provide fields in the database to track your entity’s status as it passes through the workflow) -->
+        <!-- Group instance -->
+        <column name="groupId" type="long"/>
+        <column name="companyId" type="long"/>
 
-		<column name="status" type="int" />
-		<column name="statusByUserId" type="long" />
-		<column name="statusByUserName" type="String" />
-		<column name="statusDate" type="Date" />
+        <!-- Audit fields -->
+        <column name="userId" type="long"/>
+        <column name="userName" type="String"/>
+        <column name="createDate" type="Date"/>
+        <column name="modifiedDate" type="Date"/>
 
-		<!-- Order -->
-		<order by="asc">
-			<order-column name="name" />
-		</order>
+        <!-- Status fields -->
+        <column name="status" type="int"/>
+        <column name="statusByUserId" type="long"/>
+        <column name="statusByUserName" type="String"/>
+        <column name="statusDate" type="Date"/>
 
-		<!-- Finder methods -->
-		<!-- generates a get method for retrieving Guestbook entities -->
-		<!-- This finder gets all Guestbooks by their groupId -->
-		<!-- This is how administrators put Guestbooks on multiple Sites -->
-		<!-- and each Guestbook has its own data scoped to its Site -->
-		<finder name="GroupId" return-type="Collection">
-			<finder-column name="groupId" />
-		</finder>
-	</entity>
+        <order>
+            <order-column name="createDate" order-by="desc"/>
+        </order>
+
+        <finder name="G_G" return-type="Collection">
+            <finder-column name="groupId" />
+            <finder-column name="guestbookId" />
+        </finder>
+    </entity>
+
+    <exceptions>
+        <exception>GuestbookEntryEmail</exception>
+        <exception>GuestbookEntryMessage</exception>
+        <exception>GuestbookEntryName</exception>
+        <exception>GuestbookName</exception>
+    </exceptions>
+
 </service-builder>
